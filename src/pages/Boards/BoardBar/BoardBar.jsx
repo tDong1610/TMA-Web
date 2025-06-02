@@ -26,6 +26,31 @@ const MENU_STYLES = {
 }
 
 function BoardBar({ board }) {
+  const [anchorEl, setAnchorEl] = useState(null)
+  const openMenu = Boolean(anchorEl)
+  const handleOpenMenu = (event) => {
+    setAnchorEl(event.currentTarget)
+  }
+  const handleCloseMenu = () => {
+    setAnchorEl(null)
+  }
+
+  // Handler mẫu cho các action
+  const handleRenameBoard = () => {
+    handleCloseMenu()
+    alert('Sửa tên bảng') // Sau này bạn có thể mở modal nhập tên mới ở đây
+  }
+
+  const handleDeleteBoard = () => {
+    handleCloseMenu()
+    alert('Xóa bảng') // Sau này gọi API xóa bảng
+  }
+
+  const handleToggleBoardType = () => {
+    handleCloseMenu()
+    const newType = board?.type === 'private' ? 'public' : 'private'
+    alert(`Chuyển sang ${newType}`) // Gọi API đổi type ở đây
+  }
   return (
     <Box sx={{
       width: '100%',
@@ -76,7 +101,34 @@ function BoardBar({ board }) {
           icon={<SettingsIcon />}
           label="Setting"
           clickable
+          onClick={handleOpenMenu}
         />
+
+        <Menu
+          anchorEl={anchorEl}
+          open={openMenu}
+          onClose={handleCloseMenu}
+          anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
+          transformOrigin={{ vertical: 'top', horizontal: 'left' }}
+        >
+          <MenuItem onClick={handleRenameBoard}>
+            <EditIcon fontSize="small" sx={{ mr: 1 }} /> Sửa tên bảng
+          </MenuItem>
+          <MenuItem onClick={handleDeleteBoard}>
+            <DeleteForeverIcon fontSize="small" sx={{ mr: 1 }} /> Xóa bảng
+          </MenuItem>
+          <MenuItem onClick={handleToggleBoardType}>
+            {board?.type === 'private' ? (
+              <>
+                <LockOpenIcon fontSize="small" sx={{ mr: 1 }} /> Chuyển sang Public
+              </>
+            ) : (
+              <>
+                <LockIcon fontSize="small" sx={{ mr: 1 }} /> Chuyển sang Private
+              </>
+            )}
+          </MenuItem>
+        </Menu>
       </Box>
 
       <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
