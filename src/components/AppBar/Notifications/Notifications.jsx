@@ -99,7 +99,7 @@ function Notifications() {
       <Tooltip title="Notifications">
         <Badge
           color="warning"
-          badgeContent={newNotification ? notifications.length : 0}
+          variant={newNotification ? 'dot' : 'standard'}
           sx={{ cursor: 'pointer' }}
           id="basic-button-open-notification"
           aria-controls={open ? 'basic-notification-drop-down' : undefined}
