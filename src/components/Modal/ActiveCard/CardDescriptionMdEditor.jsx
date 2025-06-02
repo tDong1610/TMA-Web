@@ -10,7 +10,6 @@ import EditNoteIcon from '@mui/icons-material/EditNote'
 const markdownValueExample = `
   *\`Markdown Content Example:\`*
 
-  **Hello world | TrungQuanDev - Một Lập Trình Viên | Trello MERN Stack Advanced**
   [![](https://avatars.githubusercontent.com/u/14128099?v=4&s=80)](https://avatars.githubusercontent.com/u/14128099?v=4)
   \`\`\`javascript
   import React from "react"

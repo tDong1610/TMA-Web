@@ -1,4 +1,4 @@
-// TrungQuanDev: https://youtube.com/@trungquandev
+
 import { Link, useNavigate } from 'react-router-dom'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'

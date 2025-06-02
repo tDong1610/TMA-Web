@@ -36,7 +36,7 @@ function CardActivitySection({ cardComments=[], onAddCardComment }) {
       <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
         <Avatar
           sx={{ width: 36, height: 36, cursor: 'pointer' }}
-          alt="trungquandev"
+          alt="avatar"
           src={currentUser?.avatar}
         />
         <TextField
@@ -55,10 +55,10 @@ function CardActivitySection({ cardComments=[], onAddCardComment }) {
       }
       {cardComments.map((comment, index) =>
         <Box sx={{ display: 'flex', gap: 1, width: '100%', mb: 1.5 }} key={index}>
-          <Tooltip title="trungquandev">
+          <Tooltip title="comment">
             <Avatar
               sx={{ width: 36, height: 36, cursor: 'pointer' }}
-              alt="trungquandev"
+              alt="comment"
               src={comment.userAvatar}
             />
           </Tooltip>

@@ -54,7 +54,7 @@ function Profiles() {
         >
           <Avatar
             sx={{ width: 36, height: 36 }}
-            alt="TrungQuanDev"
+            alt="Avatar"
             src={currentUser?.avatar}
           />
         </IconButton>
