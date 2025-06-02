@@ -17,6 +17,12 @@ import EditIcon from '@mui/icons-material/Edit'
 import DeleteForeverIcon from '@mui/icons-material/DeleteForever'
 import LockOpenIcon from '@mui/icons-material/LockOpen'
 import LockIcon from '@mui/icons-material/Lock'
+import Dialog from '@mui/material/Dialog'
+import DialogTitle from '@mui/material/DialogTitle'
+import DialogContent from '@mui/material/DialogContent'
+import DialogContentText from '@mui/material/DialogContentText'
+import DialogActions from '@mui/material/DialogActions'
+import Button from '@mui/material/Button'
 
 const MENU_STYLES = {
   color: 'white',
@@ -53,10 +59,23 @@ function BoardBar({ board }) {
     alert('Xóa bảng') // Sau này gọi API xóa bảng
   }
 
+  const [openTypeDialog, setOpenTypeDialog] = useState(false)
+  const [newBoardType, setNewBoardType] = useState(board?.type)
+
   const handleToggleBoardType = () => {
+    setNewBoardType(board?.type === 'private' ? 'public' : 'private')
+    setOpenTypeDialog(true)
     handleCloseMenu()
-    const newType = board?.type === 'private' ? 'public' : 'private'
-    alert(`Chuyển sang ${newType}`) // Gọi API đổi type ở đây
+  }
+
+  const handleConfirmChangeType = () => {
+    // Gửi API đổi type ở đây
+    alert(`Changed to ${newBoardType}`)
+    setOpenTypeDialog(false)
+  }
+
+  const handleCancelChangeType = () => {
+    setOpenTypeDialog(false)
   }
   return (
     <Box sx={{
@@ -119,19 +138,19 @@ function BoardBar({ board }) {
           transformOrigin={{ vertical: 'top', horizontal: 'left' }}
         >
           <MenuItem onClick={handleRenameBoard}>
-            <EditIcon fontSize="small" sx={{ mr: 1 }} /> Sửa tên bảng
+            <EditIcon fontSize="small" sx={{ mr: 1 }} /> Rename Board
           </MenuItem>
           <MenuItem onClick={handleDeleteBoard}>
-            <DeleteForeverIcon fontSize="small" sx={{ mr: 1 }} /> Xóa bảng
+            <DeleteForeverIcon fontSize="small" sx={{ mr: 1 }} /> Delete Board
           </MenuItem>
           <MenuItem onClick={handleToggleBoardType}>
             {board?.type === 'private' ? (
               <>
-                <LockOpenIcon fontSize="small" sx={{ mr: 1 }} /> Chuyển sang Public
+                <LockOpenIcon fontSize="small" sx={{ mr: 1 }} /> Switch to Public
               </>
             ) : (
               <>
-                <LockIcon fontSize="small" sx={{ mr: 1 }} /> Chuyển sang Private
+                <LockIcon fontSize="small" sx={{ mr: 1 }} /> Switch to Private
               </>
             )}
           </MenuItem>
@@ -145,6 +164,23 @@ function BoardBar({ board }) {
         {/* Xử lý hiển thị danh sách thành viên của board */}
         <BoardUserGroup boardUsers={board?.FE_allUsers} />
       </Box>
+
+      <Dialog open={openTypeDialog} onClose={handleCancelChangeType}>
+      <DialogTitle>Change Board Visibility</DialogTitle>
+      <DialogContent>
+        <DialogContentText>
+          Are you sure you want to change this board to {newBoardType.toUpperCase()}?
+        </DialogContentText>
+      </DialogContent>
+      <DialogActions>
+        <Button onClick={handleCancelChangeType} color="inherit">
+          Cancel
+        </Button>
+        <Button onClick={handleConfirmChangeType} color="primary" variant="contained">
+          Confirm
+        </Button>
+      </DialogActions>
+    </Dialog>
     </Box>
   )
 }
