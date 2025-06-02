@@ -166,21 +166,21 @@ function BoardBar({ board }) {
       </Box>
 
       <Dialog open={openTypeDialog} onClose={handleCancelChangeType}>
-      <DialogTitle>Change Board Visibility</DialogTitle>
-      <DialogContent>
-        <DialogContentText>
-          Are you sure you want to change this board to {newBoardType.toUpperCase()}?
-        </DialogContentText>
-      </DialogContent>
-      <DialogActions>
-        <Button onClick={handleCancelChangeType} color="inherit">
-          Cancel
-        </Button>
-        <Button onClick={handleConfirmChangeType} color="primary" variant="contained">
-          Confirm
-        </Button>
-      </DialogActions>
-    </Dialog>
+        <DialogTitle>Change Board Visibility</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            Are you sure you want to change this board to {newBoardType.toUpperCase()}?
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCancelChangeType} color="inherit">
+            Cancel
+          </Button>
+          <Button onClick={handleConfirmChangeType} color="primary" variant="contained">
+            Confirm
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Box>
   )
 }
