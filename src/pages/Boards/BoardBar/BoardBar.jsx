@@ -40,6 +40,8 @@ const MENU_STYLES = {
 
 function BoardBar({ board }) {
   const [anchorEl, setAnchorEl] = useState(null)
+  const [openTypeDialog, setOpenTypeDialog] = useState(false)
+  const [openDeleteDialog, setOpenDeleteDialog] = useState(false)
   const openMenu = Boolean(anchorEl)
   const handleOpenMenu = (event) => {
     setAnchorEl(event.currentTarget)
@@ -54,12 +56,6 @@ function BoardBar({ board }) {
     alert('Sửa tên bảng') // Sau này bạn có thể mở modal nhập tên mới ở đây
   }
 
-  const handleDeleteBoard = () => {
-    handleCloseMenu()
-    alert('Xóa bảng') // Sau này gọi API xóa bảng
-  }
-
-  const [openTypeDialog, setOpenTypeDialog] = useState(false)
   const [newBoardType, setNewBoardType] = useState(board?.type)
 
   const handleToggleBoardType = () => {
@@ -140,7 +136,7 @@ function BoardBar({ board }) {
           <MenuItem onClick={handleRenameBoard}>
             <EditIcon fontSize="small" sx={{ mr: 1 }} /> Rename Board
           </MenuItem>
-          <MenuItem onClick={handleDeleteBoard}>
+          <MenuItem onClick={() => setOpenDeleteDialog(true)}>
             <DeleteForeverIcon fontSize="small" sx={{ mr: 1 }} /> Delete Board
           </MenuItem>
           <MenuItem onClick={handleToggleBoardType}>
@@ -178,6 +174,31 @@ function BoardBar({ board }) {
           </Button>
           <Button onClick={handleConfirmChangeType} color="primary" variant="contained">
             Confirm
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      <Dialog open={openDeleteDialog} onClose={() => setOpenDeleteDialog(false)}>
+        <DialogTitle>Delete Board</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            Are you sure you want to delete this board? This action cannot be undone.
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setOpenDeleteDialog(false)} color="inherit">
+            Cancel
+          </Button>
+          <Button
+            onClick={() => {
+              // TODO: Gọi API hoặc function để xóa board tại đây
+              console.log('Deleting board...')
+              setOpenDeleteDialog(false)
+            }}
+            color="error"
+            variant="contained"
+          >
+            Delete
           </Button>
         </DialogActions>
       </Dialog>
