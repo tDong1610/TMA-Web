@@ -52,7 +52,7 @@ function BoardBar({ board }) {
           label={capitalizeFirstLetter(board?.type)}
           clickable
         />
-        <Chip
+        {/* <Chip
           sx={MENU_STYLES}
           icon={<AddToDriveIcon />}
           label="Add To Google Drive"
@@ -68,6 +68,12 @@ function BoardBar({ board }) {
           sx={MENU_STYLES}
           icon={<FilterListIcon />}
           label="Filters"
+          clickable
+        /> */}
+        <Chip
+          sx={MENU_STYLES}
+          icon={<SettingsIcon />}
+          label="Setting"
           clickable
         />
       </Box>
