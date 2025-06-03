@@ -261,9 +261,21 @@ function Column({ column }) {
               justifyContent: 'space-between'
             }}>
               <Button startIcon={<AddCardIcon />} onClick={toggleOpenNewCardForm}>Add new card</Button>
-              <Tooltip title="Drag to move">
-                <DragHandleIcon sx={{ cursor: 'pointer' }} />
-              </Tooltip>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                <Tooltip title="Delete this column">
+                  <DeleteForeverIcon
+                    onClick={handleDeleteColumn}
+                    sx={{
+                      color: (theme) => theme.palette.warning.light,
+                      cursor: 'pointer',
+                      '&:hover': { color: (theme) => theme.palette.warning.main }
+                    }}
+                  />
+                </Tooltip>
+                <Tooltip title="Drag to move">
+                  <DragHandleIcon sx={{ cursor: 'pointer' }} />
+                </Tooltip>
+              </Box>
             </Box>
             : <Box sx={{
               height: '100%',

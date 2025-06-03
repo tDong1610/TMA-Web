@@ -7,14 +7,21 @@ import CommentIcon from '@mui/icons-material/Comment'
 import AttachmentIcon from '@mui/icons-material/Attachment'
 import Button from '@mui/material/Button'
 import Typography from '@mui/material/Typography'
+import DeleteIcon from '@mui/icons-material/Delete';
+import IconButton from '@mui/material/IconButton';
+import { useConfirm } from 'material-ui-confirm'
+import { toast } from 'react-toastify'
 
 import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import { useDispatch } from 'react-redux'
 import { updateCurrentActiveCard, showModalActiveCard } from '~/redux/activeCard/activeCardSlice'
+import { deleteCardAPI } from '~/apis'
+import { removeCardFromBoard } from '~/redux/activeBoard/activeBoardSlice'
 
 function Card({ card }) {
   const dispatch = useDispatch()
+  const confirm = useConfirm()
 
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
     id: card._id,
@@ -73,6 +80,42 @@ function Card({ card }) {
           }
         </CardActions>
       }
+      {/* Nút xóa card */} 
+      <IconButton 
+        size="small"
+        sx={{
+          position: 'absolute',
+          top: 0,
+          right: 0,
+          zIndex: 1,
+          '&:hover': { color: 'error.main' }
+        }}
+        onClick={async (event) => {
+          event.stopPropagation(); // Ngăn chặn sự kiện click lan ra card
+          try {
+            await confirm({
+              title: 'Delete Card',
+              description: 'Are you sure you want to delete this card? This action cannot be undone.',
+              confirmationText: 'Delete',
+              cancellationText: 'Cancel',
+              confirmationButtonProps: { color: 'error' }
+            })
+
+            await deleteCardAPI(card._id)
+            dispatch(removeCardFromBoard(card))
+            // Không cần đóng modal vì nút xóa này nằm trên card chứ không phải trong modal
+            toast.success('Card deleted successfully!')
+          } catch (error) {
+            if (error?.message) {
+              toast.error(error.message)
+            } else {
+              toast.error('Failed to delete card.')
+            }
+          }
+        }}
+      >
+        <DeleteIcon fontSize="small" />
+      </IconButton>
     </MuiCard>
   )
 }

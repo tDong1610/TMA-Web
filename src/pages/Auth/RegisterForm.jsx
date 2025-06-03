@@ -1,4 +1,3 @@
-
 import { Link, useNavigate } from 'react-router-dom'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
@@ -31,8 +30,8 @@ function RegisterForm() {
     toast.promise(
       registerUserAPI({ email, password }),
       { pending: 'Registration is in progress...' }
-    ).then(user => {
-      navigate(`/login?registeredEmail=${user.email}`)
+    ).then(() => {
+      navigate('/login')
     })
   }
 

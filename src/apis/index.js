@@ -1,6 +1,7 @@
 import authorizedAxiosInstance from '~/utils/authorizeAxios'
 import { API_ROOT } from '~/utils/constants'
 import { toast } from 'react-toastify'
+import axios from 'axios'
 
 /**
  * Tất cả các function bên dưới các bạn sẽ thấy mình chỉ request và lấy data từ response luôn, mà không có try catch hay then catch gì để bắt lỗi.
@@ -50,16 +51,36 @@ export const createNewCardAPI = async (newCardData) => {
   return response.data
 }
 
-/** Users */
-export const registerUserAPI = async (data) => {
-  const response = await authorizedAxiosInstance.post(`${API_ROOT}/v1/users/register`, data)
-  toast.success('Account created successfully! Please check and verify your account before logging in!', { theme: 'colored' })
+export const deleteCardAPI = async (cardId) => {
+  const response = await authorizedAxiosInstance.delete(`${API_ROOT}/v1/cards/${cardId}`)
   return response.data
 }
 
-export const verifyUserAPI = async (data) => {
+export const uploadCardAttachmentAPI = async (cardId, file) => {
+  const formData = new FormData()
+  formData.append('attachment', file)
+  const response = await authorizedAxiosInstance.post(`${API_ROOT}/v1/cards/${cardId}/attachments`, formData, {
+    headers: {
+      'Content-Type': 'multipart/form-data'
+    }
+  })
+  return response.data
+}
+
+/** Users */
+export const registerUserAPI = async (data) => {
+  const response = await authorizedAxiosInstance.post(`${API_ROOT}/v1/users/register`, data)
+  toast.success('Account created successfully! You can now login.', { theme: 'colored' })
+  return response.data
+}
+
+export const verifyAccountAPI = async (data) => {
   const response = await authorizedAxiosInstance.put(`${API_ROOT}/v1/users/verify`, data)
-  toast.success('Account verified successfully! Now you can login to enjoy our services! Have a good day!', { theme: 'colored' })
+  return response.data
+}
+
+export const sendOTPVerifyEmailAPI = async (data) => {
+  const response = await authorizedAxiosInstance.post(`${API_ROOT}/v1/users/send-otp-verify-email`, data)
   return response.data
 }
 
@@ -89,3 +110,75 @@ export const inviteUserToBoardAPI = async (data) => {
   toast.success('User invited to board successfully!')
   return response.data
 }
+
+export const deleteBoardAPI = async (boardId) => {
+  const response = await authorizedAxiosInstance.delete(`${API_ROOT}/v1/boards/${boardId}`)
+  return response.data
+}
+
+export const resendOTPAPI = async (data) => {
+  const response = await authorizedAxiosInstance.post(`${API_ROOT}/v1/users/send-otp-verify-email`, data)
+  return response.data
+}
+
+export const getTemplatesAPI = async (params) => {
+  const response = await authorizedAxiosInstance.get(`${API_ROOT}/v1/templates`, { params })
+  return response.data
+}
+
+export const getTemplateDetailsAPI = async (id) => {
+  const response = await authorizedAxiosInstance.get(`${API_ROOT}/v1/templates/${id}`)
+  return response.data
+}
+
+export const createTemplateAPI = async (data) => {
+  const response = await authorizedAxiosInstance.post(`${API_ROOT}/v1/templates`, data)
+  return response.data
+}
+
+export const updateTemplateAPI = async (id, data) => {
+  const response = await authorizedAxiosInstance.put(`${API_ROOT}/v1/templates/${id}`, data)
+  return response.data
+}
+
+export const deleteTemplateAPI = async (id) => {
+  const response = await authorizedAxiosInstance.delete(`${API_ROOT}/v1/templates/${id}`)
+  return response.data
+}
+
+// Template APIs
+export const getTemplates = async () => {
+  try {
+    const response = await axios.get('/api/templates');
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const createTemplate = async (templateData) => {
+  try {
+    const response = await axios.post('/api/templates', templateData);
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const updateTemplate = async (templateId, templateData) => {
+  try {
+    const response = await axios.put(`/api/templates/${templateId}`, templateData);
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const deleteTemplate = async (templateId) => {
+  try {
+    const response = await axios.delete(`/api/templates/${templateId}`);
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+}; 

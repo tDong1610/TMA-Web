@@ -17,11 +17,24 @@ import CardContent from '@mui/material/CardContent'
 // import CardMedia from '@mui/material/CardMedia'
 import Pagination from '@mui/material/Pagination'
 import PaginationItem from '@mui/material/PaginationItem'
-import { Link, useLocation } from 'react-router-dom'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
 import randomColor from 'randomcolor'
 import SidebarCreateBoardModal from './create'
-import { fetchBoardsAPI } from '~/apis'
+import { fetchBoardsAPI, deleteBoardAPI, updateBoardDetailsAPI } from '~/apis'
 import { DEFAULT_PAGE, DEFAULT_ITEMS_PER_PAGE } from '~/utils/constants'
+import IconButton from '@mui/material/IconButton'
+import EditIcon from '@mui/icons-material/Edit'
+import DeleteIcon from '@mui/icons-material/Delete'
+import Dialog from '@mui/material/Dialog'
+import DialogTitle from '@mui/material/DialogTitle'
+import DialogContent from '@mui/material/DialogContent'
+import DialogContentText from '@mui/material/DialogContentText'
+import DialogActions from '@mui/material/DialogActions'
+import Button from '@mui/material/Button'
+import TextField from '@mui/material/TextField'
+import { toast } from 'react-toastify'
+import LockOpenIcon from '@mui/icons-material/LockOpen'
+import LockIcon from '@mui/icons-material/Lock'
 
 import { styled } from '@mui/material/styles'
 // Styles của mấy cái Sidebar item menu, anh gom lại ra đây cho gọn.
@@ -43,10 +56,17 @@ const SidebarItem = styled(Box)(({ theme }) => ({
 }))
 
 function Boards() {
+  const navigate = useNavigate()
   // Số lượng bản ghi boards hiển thị tối đa trên 1 page tùy dự án (thường sẽ là 12 cái)
   const [boards, setBoards] = useState(null)
   // Tổng toàn bộ số lượng bản ghi boards có trong Database mà phía BE trả về để FE dùng tính toán phân trang
   const [totalBoards, setTotalBoards] = useState(null)
+  const [openDeleteDialog, setOpenDeleteDialog] = useState(false)
+  const [openEditDialog, setOpenEditDialog] = useState(false)
+  const [selectedBoard, setSelectedBoard] = useState(null)
+  const [newBoardTitle, setNewBoardTitle] = useState('')
+  const [newBoardDescription, setNewBoardDescription] = useState('')
+  const [newBoardType, setNewBoardType] = useState('')
 
   // Xử lý phân trang từ url với MUI: https://mui.com/material-ui/react-pagination/#router-integration
   const location = useLocation()
@@ -73,16 +93,85 @@ function Boards() {
     // // Fake tạm giả sử trong Database trả về có tổng 100 bản ghi boards
     // setTotalBoards(100)
 
-    // Mỗi khi cái url thay đổi ví dụ như chúng ta chuyển trang, thì cái location.search lấy từ hook useLocation của react-router-dom cũng thay đổi theo, đồng nghĩa hàm useEffect sẽ chạy lại và fetch lại API theo đúng page mới vì cái localtion.search đã nằm trong dependencies của useEffect
+    // Mỗi khi cái url thay đổi ví dụ như chúng ta chuyển trang, thì cái location.search lấy từ hook useLocation của react-router-dom củng thay đổi theo, đồng nghĩa hàm useEffect sẽ chạy lại và fetch lại API theo đúng page mới vì cái localtion.search đã nằm trong dependencies của useEffect
     // console.log(location.search)
 
     // Gọi API lấy danh sách boards ở đây...
-    fetchBoardsAPI(location.search).then(updateStateData)
+    fetchBoardsAPI(location.search)
+      .then(updateStateData)
+      .catch(error => {
+        console.error('Error fetching boards:', error)
+        toast.error('Failed to load boards. Please try again.')
+        setBoards([]) // Optionally clear boards or set an error state
+        setTotalBoards(0)
+      })
   }, [location.search])
 
   const afterCreateNewBoard = () => {
     // Đơn giản là cứ fetch lại danh sách board tương tự trong useEffect
     fetchBoardsAPI(location.search).then(updateStateData)
+  }
+
+  const handleOpenDeleteDialog = (board) => {
+    setSelectedBoard(board)
+    setOpenDeleteDialog(true)
+  }
+
+  const handleCloseDeleteDialog = () => {
+    setOpenDeleteDialog(false)
+    setSelectedBoard(null)
+  }
+
+  const handleOpenEditDialog = (board) => {
+    setSelectedBoard(board)
+    setNewBoardTitle(board.title)
+    setNewBoardDescription(board.description)
+    setNewBoardType(board.type)
+    setOpenEditDialog(true)
+  }
+
+  const handleCloseEditDialog = () => {
+    setOpenEditDialog(false)
+    setSelectedBoard(null)
+    setNewBoardTitle('')
+    setNewBoardDescription('')
+    setNewBoardType('')
+  }
+
+  const handleDeleteBoard = async () => {
+    try {
+      await deleteBoardAPI(selectedBoard._id)
+      toast.success('Board deleted successfully!')
+      fetchBoardsAPI(location.search).then(updateStateData)
+    } catch (error) {
+      toast.error('Error deleting board!')
+    }
+    handleCloseDeleteDialog()
+  }
+
+  const handleUpdateBoardTitle = async () => {
+    if (!newBoardTitle.trim()) {
+      toast.error('Please enter board title!')
+      return
+    }
+
+    if (!newBoardDescription.trim()) {
+      toast.error('Please enter board description!')
+      return
+    }
+
+    try {
+      await updateBoardDetailsAPI(selectedBoard._id, {
+        title: newBoardTitle,
+        description: newBoardDescription,
+        type: newBoardType
+      })
+      toast.success('Board updated successfully!')
+      fetchBoardsAPI(location.search).then(updateStateData)
+      handleCloseEditDialog()
+    } catch (error) {
+      toast.error('Error updating board!')
+    }
   }
 
   // Lúc chưa tồn tại boards > đang chờ gọi api thì hiện loading
@@ -135,9 +224,19 @@ function Boards() {
                       <Box sx={{ height: '50px', backgroundColor: randomColor() }}></Box>
 
                       <CardContent sx={{ p: 1.5, '&:last-child': { p: 1.5 } }}>
-                        <Typography gutterBottom variant="h6" component="div">
-                          {b?.title}
-                        </Typography>
+                        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
+                          <Typography gutterBottom variant="h6" component="div">
+                            {b?.title}
+                          </Typography>
+                          <Box>
+                            <IconButton size="small" onClick={() => handleOpenEditDialog(b)}>
+                              <EditIcon fontSize="small" />
+                            </IconButton>
+                            <IconButton size="small" onClick={() => handleOpenDeleteDialog(b)}>
+                              <DeleteIcon fontSize="small" />
+                            </IconButton>
+                          </Box>
+                        </Box>
                         <Typography
                           variant="body2"
                           color="text.secondary"
@@ -190,6 +289,73 @@ function Boards() {
           </Grid>
         </Grid>
       </Box>
+
+      <Dialog open={openEditDialog} onClose={handleCloseEditDialog} maxWidth="sm" fullWidth>
+        <DialogTitle>Edit Board</DialogTitle>
+        <DialogContent>
+          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, mt: 1 }}>
+            <TextField
+              autoFocus
+              label="Board Title"
+              type="text"
+              fullWidth
+              variant="outlined"
+              value={newBoardTitle}
+              onChange={(e) => setNewBoardTitle(e.target.value)}
+            />
+            <TextField
+              label="Description"
+              type="text"
+              fullWidth
+              variant="outlined"
+              multiline
+              rows={3}
+              value={newBoardDescription}
+              onChange={(e) => setNewBoardDescription(e.target.value)}
+            />
+            <Box>
+              <Typography variant="subtitle2" sx={{ mb: 1 }}>Board Type:</Typography>
+              <Box sx={{ display: 'flex', gap: 2 }}>
+                <Button
+                  variant={newBoardType === 'public' ? 'contained' : 'outlined'}
+                  onClick={() => setNewBoardType('public')}
+                  startIcon={<LockOpenIcon />}
+                >
+                  Public
+                </Button>
+                <Button
+                  variant={newBoardType === 'private' ? 'contained' : 'outlined'}
+                  onClick={() => setNewBoardType('private')}
+                  startIcon={<LockIcon />}
+                >
+                  Private
+                </Button>
+              </Box>
+            </Box>
+          </Box>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCloseEditDialog}>Cancel</Button>
+          <Button onClick={handleUpdateBoardTitle} color="primary" variant="contained">
+            Save
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      <Dialog open={openDeleteDialog} onClose={handleCloseDeleteDialog}>
+        <DialogTitle>Delete Board</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            Are you sure you want to delete this board? This action cannot be undone.
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCloseDeleteDialog}>Cancel</Button>
+          <Button onClick={handleDeleteBoard} color="error" variant="contained">
+            Delete
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Container>
   )
 }

@@ -7,7 +7,6 @@ import Typography from '@mui/material/Typography'
 import Workspaces from './Menus/Workspaces'
 import Recent from './Menus/Recent'
 import Starred from './Menus/Starred'
-import Templates from './Menus/Templates'
 import Profiles from './Menus/Profiles'
 import Button from '@mui/material/Button'
 import Tooltip from '@mui/material/Tooltip'
@@ -16,8 +15,23 @@ import LibraryAddIcon from '@mui/icons-material/LibraryAdd'
 import { Link } from 'react-router-dom'
 import Notifications from './Notifications/Notifications'
 import AutoCompleteSearchBoard from './SearchBoards/AutoCompleteSearchBoard'
+import HomeIcon from '@mui/icons-material/Home'
+import SpaceDashboardIcon from '@mui/icons-material/SpaceDashboard'
 
 function AppBar() {
+  const menuItems = [
+    {
+      title: 'Home',
+      path: '/',
+      icon: <HomeIcon />
+    },
+    {
+      title: 'Boards',
+      path: '/boards',
+      icon: <SpaceDashboardIcon />
+    }
+  ]
+
   return (
     <Box sx={{
       width: '100%',
@@ -48,7 +62,6 @@ function AppBar() {
           <Workspaces />
           <Recent />
           <Starred />
-          <Templates />
           <Button
             sx={{
               color: 'white',

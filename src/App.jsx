@@ -3,7 +3,6 @@ import { Routes, Route, Navigate, Outlet } from 'react-router-dom'
 import Board from '~/pages/Boards/_id'
 import NotFound from '~/pages/404/NotFound'
 import Auth from '~/pages/Auth/Auth'
-import AccountVerification from '~/pages/Auth/AccountVerification'
 import { useSelector } from 'react-redux'
 import { selectCurrentUser } from '~/redux/user/userSlice'
 import Settings from '~/pages/Settings/Settings'
@@ -11,7 +10,7 @@ import Boards from '~/pages/Boards'
 
 
 const ProtectedRoute = ({ user }) => {
-  // console.log(user)
+  console.log('ProtectedRoute: currentUser', user)
   if (!user) return <Navigate to='/login' replace={true} />
   return <Outlet />
 }
@@ -41,7 +40,6 @@ function App() {
       {/* Authentication */}
       <Route path='/login' element={<Auth />} />
       <Route path='/register' element={<Auth />} />
-      <Route path='/account/verification' element={<AccountVerification />} />
 
       {/* 404 not found page */}
       <Route path='*' element={<NotFound />} />

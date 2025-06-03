@@ -31,7 +31,6 @@ function LoginForm() {
   const { register, handleSubmit, formState: { errors } } = useForm()
   let [searchParams] = useSearchParams()
   const registeredEmail = searchParams.get('registeredEmail')
-  const verifiedEmail = searchParams.get('verifiedEmail')
 
   const submitLogIn = (data) => {
     const { email, password } = data
@@ -40,8 +39,6 @@ function LoginForm() {
       dispatch(loginUserAPI({ email, password })),
       { pending: 'Logging in...' }
     ).then(res => {
-      // console.log(res)
-      // Đoạn này phải kiểm tra không có lỗi (login thành công) thì mới redirect về route /
       if (!res.error) navigate('/')
     })
   }
@@ -63,19 +60,10 @@ function LoginForm() {
             Welcome to Task managerment app
           </Box>
           <Box sx={{ marginTop: '1em', display: 'flex', justifyContent: 'center', flexDirection: 'column', padding: '0 1em' }}>
-            {verifiedEmail &&
-              <Alert severity="success" sx={{ '.MuiAlert-message': { overflow: 'hidden' } }}>
-                Your email&nbsp;
-                <Typography variant="span" sx={{ fontWeight: 'bold', '&:hover': { color: '#fdba26' } }}>{verifiedEmail}</Typography>
-                &nbsp;has been verified.<br />Now you can login to enjoy our services! Have a good day!
-              </Alert>
-            }
-
             {registeredEmail &&
-              <Alert severity="info" sx={{ '.MuiAlert-message': { overflow: 'hidden' } }}>
-                An email has been sent to&nbsp;
+              <Alert severity="success" sx={{ '.MuiAlert-message': { overflow: 'hidden' } }}>
+                Account created successfully! You can now login with your email&nbsp;
                 <Typography variant="span" sx={{ fontWeight: 'bold', '&:hover': { color: '#fdba26' } }}>{registeredEmail}</Typography>
-                <br />Please check and verify your account before logging in!
               </Alert>
             }
           </Box>

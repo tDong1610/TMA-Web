@@ -23,6 +23,7 @@ import ArchiveOutlinedIcon from '@mui/icons-material/ArchiveOutlined'
 import ShareOutlinedIcon from '@mui/icons-material/ShareOutlined'
 import SubjectRoundedIcon from '@mui/icons-material/SubjectRounded'
 import DvrOutlinedIcon from '@mui/icons-material/DvrOutlined'
+import DeleteForeverIcon from '@mui/icons-material/DeleteForever'
 
 import ToggleFocusInput from '~/components/Form/ToggleFocusInput'
 import VisuallyHiddenInput from '~/components/Form/VisuallyHiddenInput'
@@ -31,6 +32,7 @@ import { toast } from 'react-toastify'
 import CardUserGroup from './CardUserGroup'
 import CardDescriptionMdEditor from './CardDescriptionMdEditor'
 import CardActivitySection from './CardActivitySection'
+import CardAttachments from './CardAttachments'
 import { useDispatch, useSelector } from 'react-redux'
 import {
   clearAndHideCurrentActiveCard,
@@ -38,12 +40,13 @@ import {
   updateCurrentActiveCard,
   selectIsShowModalActiveCard
 } from '~/redux/activeCard/activeCardSlice'
-import { updateCardDetailsAPI } from '~/apis'
-import { updateCardInBoard } from '~/redux/activeBoard/activeBoardSlice'
+import { updateCardDetailsAPI, deleteCardAPI } from '~/apis'
+import { updateCardInBoard, removeCardFromBoard } from '~/redux/activeBoard/activeBoardSlice'
 import { selectCurrentUser } from '~/redux/user/userSlice'
 import { CARD_MEMBER_ACTIONS } from '~/utils/constants'
 import ExitToAppIcon from '@mui/icons-material/ExitToApp'
 import CheckCircleIcon from '@mui/icons-material/CheckCircle'
+import { useConfirm } from 'material-ui-confirm'
 
 import { styled } from '@mui/material/styles'
 const SidebarItem = styled(Box)(({ theme }) => ({
@@ -74,6 +77,7 @@ function ActiveCard() {
   const activeCard = useSelector(selectCurrentActiveCard)
   const isShowModalActiveCard = useSelector(selectIsShowModalActiveCard)
   const currentUser = useSelector(selectCurrentUser)
+  const confirm = useConfirm()
 
   // Không dùng biến State để check đóng mở Modal nữa vì chúng ta sẽ check theo cái biến isShowModalActiveCard trong redux
   // const [isOpen, setIsOpen] = useState(true)
@@ -128,6 +132,31 @@ function ActiveCard() {
 
   const onUpdateCardMembers = (incomingMemberInfo) => {
     callApiUpdateCard({ incomingMemberInfo })
+  }
+
+  const handleDeleteCard = async () => {
+    try {
+      await confirm({
+        title: 'Delete Card',
+        description: 'Are you sure you want to delete this card? This action cannot be undone.',
+        confirmationText: 'Delete',
+        cancellationText: 'Cancel',
+        confirmationButtonProps: { color: 'error' }
+      })
+
+      await deleteCardAPI(activeCard._id)
+      dispatch(removeCardFromBoard(activeCard))
+      dispatch(clearAndHideCurrentActiveCard())
+      toast.success('Card deleted successfully!')
+    } catch (error) {
+      if (error?.message) {
+        toast.error(error.message)
+      }
+    }
+  }
+
+  const onAttachmentAdded = (newAttachment) => {
+    callApiUpdateCard({ attachment: newAttachment })
   }
 
   return (
@@ -210,10 +239,22 @@ function ActiveCard() {
                 <Typography variant="span" sx={{ fontWeight: '600', fontSize: '20px' }}>Activity</Typography>
               </Box>
 
-              {/* Feature 04: Xử lý các hành động, ví dụ comment vào Card */}
               <CardActivitySection
                 cardComments={activeCard?.comments}
                 onAddCardComment={onAddCardComment}
+              />
+            </Box>
+
+            <Box sx={{ mb: 3 }}>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+                <AttachFileOutlinedIcon />
+                <Typography variant="span" sx={{ fontWeight: '600', fontSize: '20px' }}>Attachments</Typography>
+              </Box>
+
+              <CardAttachments
+                cardId={activeCard?._id}
+                attachments={activeCard?.attachments}
+                onAttachmentAdded={onAttachmentAdded}
               />
             </Box>
           </Grid>
@@ -293,6 +334,17 @@ function ActiveCard() {
               <SidebarItem><AutoAwesomeOutlinedIcon fontSize="small" />Make Template</SidebarItem>
               <SidebarItem><ArchiveOutlinedIcon fontSize="small" />Archive</SidebarItem>
               <SidebarItem><ShareOutlinedIcon fontSize="small" />Share</SidebarItem>
+              <SidebarItem 
+                onClick={handleDeleteCard}
+                sx={{
+                  '&:hover': {
+                    color: 'error.main',
+                    '& .delete-forever-icon': { color: 'error.main' }
+                  }
+                }}
+              >
+                <DeleteForeverIcon className="delete-forever-icon" fontSize="small" />Delete
+              </SidebarItem>
             </Stack>
           </Grid>
         </Grid>
