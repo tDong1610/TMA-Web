@@ -47,8 +47,9 @@ const MENU_STYLES = {
 function BoardBar({ board }) {
   const navigate = useNavigate()
   const [anchorEl, setAnchorEl] = useState(null)
-  const openMenu = Boolean(anchorEl)
+  const [openTypeDialog, setOpenTypeDialog] = useState(false)
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false)
+  const openMenu = Boolean(anchorEl)
   const [openEditDialog, setOpenEditDialog] = useState(false)
   const [newBoardTitle, setNewBoardTitle] = useState(board?.title || '')
 
@@ -103,7 +104,7 @@ function BoardBar({ board }) {
     }
   }
 
-  const [openTypeDialog, setOpenTypeDialog] = useState(false)
+
   const [newBoardType, setNewBoardType] = useState(board?.type)
 
   const handleToggleBoardType = () => {
@@ -198,6 +199,7 @@ function BoardBar({ board }) {
           clickable
           onClick={handleOpenMenu}
         />
+
       </Box>
 
       <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
@@ -285,6 +287,31 @@ function BoardBar({ board }) {
           </Button>
           <Button onClick={handleConfirmChangeType} color="primary" variant="contained">
             Confirm
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      <Dialog open={openDeleteDialog} onClose={() => setOpenDeleteDialog(false)}>
+        <DialogTitle>Delete Board</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            Are you sure you want to delete this board? This action cannot be undone.
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setOpenDeleteDialog(false)} color="inherit">
+            Cancel
+          </Button>
+          <Button
+            onClick={() => {
+              // TODO: Gọi API hoặc function để xóa board tại đây
+              console.log('Deleting board...')
+              setOpenDeleteDialog(false)
+            }}
+            color="error"
+            variant="contained"
+          >
+            Delete
           </Button>
         </DialogActions>
       </Dialog>
