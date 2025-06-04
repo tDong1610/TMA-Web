@@ -13,7 +13,12 @@ export default defineConfig({
     react(),
     svgr()
   ],
-  // base: './'
+  base: '/',
+  build: {
+    outDir: 'dist',
+    assetsDir: 'assets',
+    sourcemap: true
+  },
   resolve: {
     alias: [
       { find: '~', replacement: '/src' }
