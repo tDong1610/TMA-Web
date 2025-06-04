@@ -144,41 +144,4 @@ export const updateTemplateAPI = async (id, data) => {
 export const deleteTemplateAPI = async (id) => {
   const response = await authorizedAxiosInstance.delete(`${API_ROOT}/v1/templates/${id}`)
   return response.data
-}
-
-// Template APIs
-export const getTemplates = async () => {
-  try {
-    const response = await axios.get('/api/templates');
-    return response.data;
-  } catch (error) {
-    throw error;
-  }
-};
-
-export const createTemplate = async (templateData) => {
-  try {
-    const response = await axios.post('/api/templates', templateData);
-    return response.data;
-  } catch (error) {
-    throw error;
-  }
-};
-
-export const updateTemplate = async (templateId, templateData) => {
-  try {
-    const response = await axios.put(`/api/templates/${templateId}`, templateData);
-    return response.data;
-  } catch (error) {
-    throw error;
-  }
-};
-
-export const deleteTemplate = async (templateId) => {
-  try {
-    const response = await axios.delete(`/api/templates/${templateId}`);
-    return response.data;
-  } catch (error) {
-    throw error;
-  }
-}; 
+} 

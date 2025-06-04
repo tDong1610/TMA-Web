@@ -3,6 +3,7 @@ import { activeBoardReducer } from './activeBoard/activeBoardSlice'
 import { userReducer } from './user/userSlice'
 import { activeCardReducer } from './activeCard/activeCardSlice'
 import { notificationsReducer } from './notifications/notificationsSlice'
+import templatesReducer from './templates/templatesSlice'
 
 /**
  * Cấu hình redux-persist
@@ -27,7 +28,8 @@ const reducers = combineReducers({
   activeBoard: activeBoardReducer,
   user: userReducer,
   activeCard: activeCardReducer,
-  notifications: notificationsReducer
+  notifications: notificationsReducer,
+  templates: templatesReducer
 })
 
 // Thực hiện persist Reducer

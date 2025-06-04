@@ -7,6 +7,7 @@ import { useSelector } from 'react-redux'
 import { selectCurrentUser } from '~/redux/user/userSlice'
 import Settings from '~/pages/Settings/Settings'
 import Boards from '~/pages/Boards'
+import TemplatesList from '~/components/Templates/TemplatesList'
 
 
 const ProtectedRoute = ({ user }) => {
@@ -25,9 +26,8 @@ function App() {
         <Navigate to="/boards" replace={true} />
       } />
 
-      {/* Protected Routes (Hiểu đơn giản trong dự án của chúng ta là những route chỉ cho truy cập sau khi đã login) */}
+      {/* Protected Routes */}
       <Route element={<ProtectedRoute user={currentUser} />}>
-
         {/* Board Details */}
         <Route path='/boards/:boardId' element={<Board />} />
         <Route path='/boards' element={<Boards />} />
@@ -37,10 +37,12 @@ function App() {
         <Route path='/settings/security' element={<Settings />} />
       </Route>
 
+      {/* Public Routes */}
+      <Route path='/templates' element={<TemplatesList />} />
+
       {/* Authentication */}
       <Route path='/login' element={<Auth />} />
       <Route path='/register' element={<Auth />} />
-
       {/* 404 not found page */}
       <Route path='*' element={<NotFound />} />
     </Routes>

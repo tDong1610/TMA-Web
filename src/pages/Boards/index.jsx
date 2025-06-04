@@ -190,11 +190,11 @@ function Boards() {
                 <SpaceDashboardIcon fontSize="small" />
                 Boards
               </SidebarItem>
-              <SidebarItem>
+              <SidebarItem onClick={() => navigate('/templates')}>
                 <ListAltIcon fontSize="small" />
                 Templates
               </SidebarItem>
-              <SidebarItem>
+              <SidebarItem onClick={() => navigate('/')}>
                 <HomeIcon fontSize="small" />
                 Home
               </SidebarItem>
