@@ -85,42 +85,6 @@ function Card({ card }) {
           }
         </CardActions>
       }
-      {/* Nút xóa card */} 
-      <IconButton 
-        size="small"
-        sx={{
-          position: 'absolute',
-          top: 0,
-          right: 0,
-          zIndex: 1,
-          '&:hover': { color: 'error.main' }
-        }}
-        onClick={async (event) => {
-          event.stopPropagation(); // Ngăn chặn sự kiện click lan ra card
-          try {
-            await confirm({
-              title: 'Delete Card',
-              description: 'Are you sure you want to delete this card? This action cannot be undone.',
-              confirmationText: 'Delete',
-              cancellationText: 'Cancel',
-              confirmationButtonProps: { color: 'error' }
-            })
-
-            await deleteCardAPI(card._id)
-            dispatch(removeCardFromBoard(card))
-            // Không cần đóng modal vì nút xóa này nằm trên card chứ không phải trong modal
-            toast.success('Card deleted successfully!')
-          } catch (error) {
-            if (error?.message) {
-              toast.error(error.message)
-            } else {
-              toast.error('Failed to delete card.')
-            }
-          }
-        }}
-      >
-        <DeleteIcon fontSize="small" />
-      </IconButton>
     </MuiCard>
   )
 }
