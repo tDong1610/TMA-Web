@@ -17,22 +17,38 @@ import {
   selectCurrentActiveBoard
 } from '~/redux/activeBoard/activeBoardSlice'
 import { useDispatch, useSelector } from 'react-redux'
-import { useParams } from 'react-router-dom'
+import { useParams, useNavigate } from 'react-router-dom'
 import PageLoadingSpinner from '~/components/Loading/PageLoadingSpinner'
 import ActiveCard from '~/components/Modal/ActiveCard/ActiveCard'
+import { toast } from 'react-toastify'
 
 function Board() {
   const dispatch = useDispatch()
-  // Không dùng State của component nữa mà chuyển qua dùng State của Redux
-  // const [board, setBoard] = useState(null)
+  const navigate = useNavigate()
   const board = useSelector(selectCurrentActiveBoard)
 
   const { boardId } = useParams()
 
   useEffect(() => {
-    // Call API
-    dispatch(fetchBoardDetailsAPI(boardId))
-  }, [dispatch, boardId])
+    const fetchBoard = async () => {
+      try {
+        // Call API và sử dụng .unwrap() để catch lỗi
+        await dispatch(fetchBoardDetailsAPI(boardId)).unwrap();
+      } catch (error) {
+        // Xử lý lỗi 410 (Gone)
+        if (error.response && error.response.status === 410) {
+          toast.error('Board không tồn tại hoặc đã bị xóa!'); // Thông báo lỗi
+          navigate('/boards'); // Chuyển hướng về trang danh sách board
+        } else {
+          // Xử lý các lỗi khác nếu có
+          toast.error(error.message || 'Đã xảy ra lỗi khi tải board.');
+        }
+      }
+    };
+
+    fetchBoard();
+
+  }, [dispatch, boardId, navigate]); // Add navigate to dependency array
 
   /**
    * Func này có nhiệm vụ gọi API và xử lý khi kéo thả Column xong xuôi
