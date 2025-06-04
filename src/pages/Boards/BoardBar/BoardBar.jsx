@@ -173,14 +173,6 @@ function BoardBar({ board }) {
             '&:hover': { borderColor: 'white' }
           }}
         />
-        <Chip
-          sx={MENU_STYLES}
-          icon={<SettingsIcon />}
-          label="Setting"
-          clickable
-          onClick={handleOpenMenu}
-        />
-
       </Box>
 
       <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
@@ -199,31 +191,31 @@ function BoardBar({ board }) {
       >
         <MenuItem onClick={handleOpenEditDialog}>
           <ListItemIcon><EditIcon fontSize="small" /></ListItemIcon>
-          <ListItemText>Sửa tên bảng</ListItemText>
+          <ListItemText>Edit Board</ListItemText>
         </MenuItem>
         <MenuItem onClick={handleOpenDeleteDialog}>
           <ListItemIcon><DeleteForeverIcon fontSize="small" /></ListItemIcon>
-          <ListItemText>Xóa bảng</ListItemText>
+          <ListItemText>Delete Board</ListItemText>
         </MenuItem>
       </Menu>
 
       <Dialog open={openDeleteDialog} onClose={handleCloseDeleteDialog}>
-        <DialogTitle>Xóa bảng</DialogTitle>
+        <DialogTitle>Delete Board</DialogTitle>
         <DialogContent>
           <DialogContentText>
-            Bạn có chắc chắn muốn xóa bảng này không? Hành động này không thể hoàn tác.
+            Are you sure you want to delete this board? This action cannot be undone.
           </DialogContentText>
         </DialogContent>
         <DialogActions>
           <Button onClick={handleCloseDeleteDialog}>Hủy</Button>
           <Button onClick={handleDeleteBoard} color="error" variant="contained">
-            Xóa
+            Delelte
           </Button>
         </DialogActions>
       </Dialog>
 
       <Dialog open={openEditDialog} onClose={handleCloseEditDialog}>
-        <DialogTitle>Sửa tên bảng</DialogTitle>
+        <DialogTitle>Edit Board</DialogTitle>
         <DialogContent>
           <TextField
             autoFocus
@@ -237,7 +229,7 @@ function BoardBar({ board }) {
           />
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleCloseEditDialog}>Hủy</Button>
+          <Button onClick={handleCloseEditDialog}>Cancel</Button>
           <Button onClick={handleUpdateBoardTitle} color="primary" variant="contained">
             Lưu
           </Button>
