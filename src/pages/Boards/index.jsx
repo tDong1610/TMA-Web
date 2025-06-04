@@ -25,6 +25,11 @@ import { DEFAULT_PAGE, DEFAULT_ITEMS_PER_PAGE } from '~/utils/constants'
 import IconButton from '@mui/material/IconButton'
 import EditIcon from '@mui/icons-material/Edit'
 import DeleteIcon from '@mui/icons-material/Delete'
+import MoreVertIcon from '@mui/icons-material/MoreVert'
+import Menu from '@mui/material/Menu'
+import MenuItem from '@mui/material/MenuItem'
+import ListItemIcon from '@mui/material/ListItemIcon'
+import ListItemText from '@mui/material/ListItemText'
 import Dialog from '@mui/material/Dialog'
 import DialogTitle from '@mui/material/DialogTitle'
 import DialogContent from '@mui/material/DialogContent'
@@ -67,6 +72,11 @@ function Boards() {
   const [newBoardTitle, setNewBoardTitle] = useState('')
   const [newBoardDescription, setNewBoardDescription] = useState('')
   const [newBoardType, setNewBoardType] = useState('')
+  
+  // States cho dropdown menu
+  const [anchorEl, setAnchorEl] = useState(null)
+  const [menuBoardId, setMenuBoardId] = useState(null)
+  const openMenu = Boolean(anchorEl)
 
   // Xử lý phân trang từ url với MUI: https://mui.com/material-ui/react-pagination/#router-integration
   const location = useLocation()
@@ -112,9 +122,21 @@ function Boards() {
     fetchBoardsAPI(location.search).then(updateStateData)
   }
 
+  // Xử lý dropdown menu
+  const handleMenuClick = (event, boardId) => {
+    setAnchorEl(event.currentTarget)
+    setMenuBoardId(boardId)
+  }
+
+  const handleMenuClose = () => {
+    setAnchorEl(null)
+    setMenuBoardId(null)
+  }
+
   const handleOpenDeleteDialog = (board) => {
     setSelectedBoard(board)
     setOpenDeleteDialog(true)
+    handleMenuClose() // Đóng menu khi mở dialog
   }
 
   const handleCloseDeleteDialog = () => {
@@ -128,6 +150,7 @@ function Boards() {
     setNewBoardDescription(board.description)
     setNewBoardType(board.type)
     setOpenEditDialog(true)
+    handleMenuClose() // Đóng menu khi mở dialog
   }
 
   const handleCloseEditDialog = () => {
@@ -228,14 +251,17 @@ function Boards() {
                           <Typography gutterBottom variant="h6" component="div">
                             {b?.title}
                           </Typography>
-                          <Box>
-                            <IconButton size="small" onClick={() => handleOpenEditDialog(b)}>
-                              <EditIcon fontSize="small" />
-                            </IconButton>
-                            <IconButton size="small" onClick={() => handleOpenDeleteDialog(b)}>
-                              <DeleteIcon fontSize="small" />
-                            </IconButton>
-                          </Box>
+                          {/* Thay thế 2 nút riêng biệt bằng 1 nút menu */}
+                          <IconButton 
+                            size="small" 
+                            onClick={(event) => handleMenuClick(event, b._id)}
+                            aria-label="more options"
+                            aria-controls={openMenu && menuBoardId === b._id ? 'board-menu' : undefined}
+                            aria-haspopup="true"
+                            aria-expanded={openMenu && menuBoardId === b._id ? 'true' : undefined}
+                          >
+                            <MoreVertIcon fontSize="small" />
+                          </IconButton>
                         </Box>
                         <Typography
                           variant="body2"
@@ -262,6 +288,38 @@ function Boards() {
                 )}
               </Grid>
             }
+
+            {/* Dropdown Menu */}
+            <Menu
+              id="board-menu"
+              anchorEl={anchorEl}
+              open={openMenu}
+              onClose={handleMenuClose}
+              MenuListProps={{
+                'aria-labelledby': 'board-menu-button',
+              }}
+              transformOrigin={{ horizontal: 'right', vertical: 'top' }}
+              anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
+            >
+              <MenuItem onClick={() => {
+                const board = boards.find(b => b._id === menuBoardId)
+                if (board) handleOpenEditDialog(board)
+              }}>
+                <ListItemIcon>
+                  <EditIcon fontSize="small" />
+                </ListItemIcon>
+                <ListItemText>Edit Board</ListItemText>
+              </MenuItem>
+              <MenuItem onClick={() => {
+                const board = boards.find(b => b._id === menuBoardId)
+                if (board) handleOpenDeleteDialog(board)
+              }}>
+                <ListItemIcon>
+                  <DeleteIcon fontSize="small" />
+                </ListItemIcon>
+                <ListItemText>Delete Board</ListItemText>
+              </MenuItem>
+            </Menu>
 
             {/* Trường hợp gọi API và có totalBoards trong Database trả về thì render khu vực phân trang  */}
             {(totalBoards > 0) &&
