@@ -67,6 +67,11 @@ export const uploadCardAttachmentAPI = async (cardId, file) => {
   return response.data
 }
 
+export const deleteCardAttachmentAPI = async (cardId, attachmentId) => {
+  const response = await authorizedAxiosInstance.delete(`${API_ROOT}/v1/cards/${cardId}/attachments/${attachmentId}`);
+  return response.data;
+}
+
 /** Users */
 export const registerUserAPI = async (data) => {
   const response = await authorizedAxiosInstance.post(`${API_ROOT}/v1/users/register`, data)

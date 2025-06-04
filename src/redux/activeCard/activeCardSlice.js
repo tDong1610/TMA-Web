@@ -1,4 +1,6 @@
 import { createSlice } from '@reduxjs/toolkit'
+import { createAsyncThunk } from '@reduxjs/toolkit'
+import { deleteCardAttachmentAPI } from '~/apis'
 
 // Khởi tạo giá trị của một Slice trong redux
 const initialState = {
@@ -33,8 +35,13 @@ export const activeCardSlice = createSlice({
     }
   },
   // ExtraReducers: Xử lý dữ liệu bất đồng bộ
-  // eslint-disable-next-line no-unused-vars
-  extraReducers: (builder) => {}
+  extraReducers: (builder) => {
+    // Xử lý kết quả sau khi gọi API xóa attachment
+    builder.addCase(deleteCardAttachment.fulfilled, (state, action) => {
+      // action.payload là dữ liệu card sau khi đã xóa attachment từ backend
+      state.currentActiveCard = action.payload;
+    });
+  }
 })
 
 // Action creators are generated for each case reducer function
@@ -58,3 +65,12 @@ export const selectIsShowModalActiveCard = (state) => {
 // Cái file này tên là activeCardSlice NHƯNG chúng ta sẽ export một thứ tên là Reducer, mọi người lưu ý :D
 // export default activeCardSlice.reducer
 export const activeCardReducer = activeCardSlice.reducer
+
+// Async Thunks (Xử lý các tác vụ bất đồng bộ với API)
+export const deleteCardAttachment = createAsyncThunk(
+  'activeCard/deleteCardAttachment',
+  async ({ cardId, attachmentId }) => {
+    const response = await deleteCardAttachmentAPI(cardId, attachmentId);
+    return response; // Backend trả về card đã cập nhật
+  }
+);

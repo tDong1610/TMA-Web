@@ -124,6 +124,7 @@ function TemplatesList() {
                         <Typography variant="body2" color="text.secondary">
                           {template.description}
                         </Typography>
+                        <p>File: {template.fileName}.{template.fileFormat}</p>
                       </CardContent>
                       <CardActions>
                         <Button 

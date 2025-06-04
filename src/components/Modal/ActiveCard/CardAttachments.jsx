@@ -12,11 +12,17 @@ import DeleteIcon from '@mui/icons-material/Delete'
 import { toast } from 'react-toastify'
 import { uploadCardAttachmentAPI } from '~/apis'
 
-function CardAttachments({ cardId, attachments = [], onAttachmentAdded }) {
+function CardAttachments({ cardId, attachments = [], onAttachmentAdded, onAttachmentDeleted }) {
   const [isUploading, setIsUploading] = useState(false)
 
   const handleFileUpload = async (event) => {
     const file = event.target?.files?.[0]
+    if (!cardId) {
+      toast.error('Card ID is missing. Cannot upload file.');
+      setIsUploading(false);
+      event.target.value = ''; // Reset input
+      return;
+    }
     if (!file) return
 
     setIsUploading(true)
@@ -56,7 +62,7 @@ function CardAttachments({ cardId, attachments = [], onAttachmentAdded }) {
             <ListItem
               key={index}
               secondaryAction={
-                <IconButton edge="end" aria-label="delete">
+                <IconButton edge="end" aria-label="delete" onClick={() => onAttachmentDeleted(attachment._id)}>
                   <DeleteIcon />
                 </IconButton>
               }
@@ -65,8 +71,16 @@ function CardAttachments({ cardId, attachments = [], onAttachmentAdded }) {
                 <InsertDriveFileIcon />
               </ListItemIcon>
               <ListItemText
-                primary={attachment.name}
-                secondary={attachment.size}
+                primary={
+                  <a href={attachment.url} target="_blank" rel="noopener noreferrer" style={{ textDecoration: 'none', color: 'inherit' }}>
+                    {attachment.name}
+                  </a>
+                }
+                secondary={
+                  <Typography component="span" variant="body2" color="text.secondary">
+                    {`${(attachment.size / 1024).toFixed(2)} KB`}
+                  </Typography>
+                }
               />
             </ListItem>
           ))}

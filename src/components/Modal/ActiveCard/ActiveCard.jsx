@@ -38,7 +38,8 @@ import {
   clearAndHideCurrentActiveCard,
   selectCurrentActiveCard,
   updateCurrentActiveCard,
-  selectIsShowModalActiveCard
+  selectIsShowModalActiveCard,
+  deleteCardAttachment
 } from '~/redux/activeCard/activeCardSlice'
 import { updateCardDetailsAPI, deleteCardAPI } from '~/apis'
 import { updateCardInBoard, removeCardFromBoard } from '~/redux/activeBoard/activeBoardSlice'
@@ -159,6 +160,10 @@ function ActiveCard() {
     callApiUpdateCard({ attachment: newAttachment })
   }
 
+  const handleDeleteAttachment = (attachmentId) => {
+    dispatch(deleteCardAttachment({ cardId: activeCard._id, attachmentId }));
+  };
+
   return (
     <Modal
       disableScrollLock
@@ -255,6 +260,7 @@ function ActiveCard() {
                 cardId={activeCard?._id}
                 attachments={activeCard?.attachments}
                 onAttachmentAdded={onAttachmentAdded}
+                onAttachmentDeleted={handleDeleteAttachment}
               />
             </Box>
           </Grid>
