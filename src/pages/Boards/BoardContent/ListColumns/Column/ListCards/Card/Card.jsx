@@ -11,17 +11,19 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import IconButton from '@mui/material/IconButton';
 import { useConfirm } from 'material-ui-confirm'
 import { toast } from 'react-toastify'
+import React from 'react'
 
 import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
-import { useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { updateCurrentActiveCard, showModalActiveCard } from '~/redux/activeCard/activeCardSlice'
 import { deleteCardAPI } from '~/apis'
-import { removeCardFromBoard } from '~/redux/activeBoard/activeBoardSlice'
+import { removeCardFromBoard, selectCurrentActiveBoard } from '~/redux/activeBoard/activeBoardSlice'
 
 function Card({ card }) {
   const dispatch = useDispatch()
   const confirm = useConfirm()
+  const board = useSelector(selectCurrentActiveBoard)
 
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
     id: card._id,
@@ -42,10 +44,13 @@ function Card({ card }) {
   }
 
   const setActiveCard = () => {
-    // Cập nhật data cho cái activeCard trong Redux
-    dispatch(updateCurrentActiveCard(card))
-    // Hiện Modal ActiveCard lên
-    dispatch(showModalActiveCard())
+    const latestCardData = board?.columns?.find(column => column._id === card.columnId)?.cards?.find(c => c._id === card._id);
+    if (latestCardData) {
+      dispatch(updateCurrentActiveCard(latestCardData));
+      dispatch(showModalActiveCard());
+    } else {
+      console.error('Could not find latest card data in board state.');
+    }
   }
 
   return (
@@ -120,4 +125,16 @@ function Card({ card }) {
   )
 }
 
-export default Card
+export default React.memo(Card, (prevProps, nextProps) => {
+  // Chỉ re-render nếu các thuộc tính quan trọng của card thay đổi
+  // Bao gồm cả độ dài mảng attachments
+  return (
+    prevProps.card._id === nextProps.card._id &&
+    prevProps.card.title === nextProps.card.title &&
+    prevProps.card.cover === nextProps.card.cover &&
+    prevProps.card.FE_PlaceholderCard === nextProps.card.FE_PlaceholderCard &&
+    prevProps.card.memberIds?.length === nextProps.card.memberIds?.length &&
+    prevProps.card.comments?.length === nextProps.card.comments?.length &&
+    prevProps.card.attachments?.length === nextProps.card.attachments?.length
+  );
+})

@@ -40,26 +40,41 @@ export const activeBoardSlice = createSlice({
       state.currentActiveBoard = board
     },
     updateCardInBoard: (state, action) => {
-      // Update nested data
-      // https://redux-toolkit.js.org/usage/immer-reducers#updating-nested-data
       const incomingCard = action.payload
 
-      // Tìm dần từ board > column > card
-      const column = state.currentActiveBoard.columns.find(i => i._id === incomingCard.columnId)
-      if (column) {
-        const card = column.cards.find(i => i._id === incomingCard._id)
-        if (card) {
-          // card.title = incomingCard.title
-          // card['title'] = incomingCard['title']
-          /**
-           * Giải thích đoạn dưới, các bạn mới lần đầu sẽ dễ bị lú :D
-           * Đơn giản là dùng Object.keys để lấy toàn bộ các properties (keys) của incomingCard về một Array rồi forEach nó ra.
-           * Sau đó tùy vào trường hợp cần thì kiểm tra thêm còn không thì cập nhật ngược lại giá trị vào card luôn như bên dưới.
-          */
-          Object.keys(incomingCard).forEach(key => {
-            card[key] = incomingCard[key]
-          })
-        }
+      // Tìm index của column chứa card
+      const columnIndex = state.currentActiveBoard.columns.findIndex(column => column._id === incomingCard.columnId);
+
+      if (columnIndex > -1) {
+        // Tạo mảng cards mới cho column đó với card đã cập nhật
+        const newCards = state.currentActiveBoard.columns[columnIndex].cards.map(card =>
+          card._id === incomingCard._id ? incomingCard : card
+        );
+
+        // Tạo object column mới với mảng cards đã cập nhật
+        const newColumn = {
+          ...state.currentActiveBoard.columns[columnIndex],
+          cards: newCards
+        };
+
+        // Tạo mảng columns mới cho board với object column đã cập nhật
+        const newColumns = state.currentActiveBoard.columns.map((column, index) =>
+          index === columnIndex ? newColumn : column
+        );
+
+        // Cập nhật toàn bộ object board với mảng columns mới
+        state.currentActiveBoard = {
+          ...state.currentActiveBoard,
+          columns: newColumns
+        };
+
+        // Cần đảm bảo cardOrderIds cũng được đồng bộ nếu có thay đổi thứ tự (mặc dù xóa không đổi thứ tự)
+        // Nếu incomingCard có cardOrderIds, chúng ta có thể cập nhật nó
+        // Tuy nhiên, việc xóa attachment không làm thay đổi cardOrderIds, nên dòng này có thể không cần thiết nhưng để dự phòng.
+        // if (incomingCard.cardOrderIds) {
+        //   newColumn.cardOrderIds = incomingCard.cardOrderIds;
+        // }
+
       }
     },
     removeCardFromBoard: (state, action) => {
