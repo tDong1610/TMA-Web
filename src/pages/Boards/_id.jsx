@@ -31,6 +31,15 @@ function Board() {
 
   useEffect(() => {
     const fetchBoard = async () => {
+      // Kiểm tra nếu boardId tồn tại trước khi gọi API
+      if (!boardId) {
+        console.error('Board ID is missing from URL.');
+        // Có thể thêm xử lý chuyển hướng hoặc thông báo lỗi ở đây nếu cần thiết
+        return;
+      }
+
+      console.log('Fetching board with ID:', boardId); // Log giá trị boardId
+
       try {
         // Call API và sử dụng .unwrap() để catch lỗi
         await dispatch(fetchBoardDetailsAPI(boardId)).unwrap();
