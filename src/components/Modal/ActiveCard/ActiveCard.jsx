@@ -160,8 +160,14 @@ function ActiveCard() {
     callApiUpdateCard({ attachment: newAttachment })
   }
 
-  const handleDeleteAttachment = (attachmentId) => {
-    dispatch(deleteCardAttachment({ cardId: activeCard._id, attachmentId }));
+  const handleDeleteAttachment = async (attachmentId) => {
+    try {
+      const updatedCard = await dispatch(deleteCardAttachment({ cardId: activeCard._id, attachmentId })).unwrap();
+      dispatch(updateCardInBoard(updatedCard));
+      toast.success('Attachment deleted successfully!');
+    } catch (error) {
+      toast.error(error?.message || 'Failed to delete attachment');
+    }
   };
 
   return (

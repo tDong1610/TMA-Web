@@ -1,6 +1,7 @@
 import { createSlice } from '@reduxjs/toolkit'
 import { createAsyncThunk } from '@reduxjs/toolkit'
 import { deleteCardAttachmentAPI } from '~/apis'
+// import { updateCardInBoard } from '~/redux/activeBoard/activeBoardSlice' // Import action từ activeBoardSlice
 
 // Khởi tạo giá trị của một Slice trong redux
 const initialState = {
@@ -40,6 +41,8 @@ export const activeCardSlice = createSlice({
     builder.addCase(deleteCardAttachment.fulfilled, (state, action) => {
       // action.payload là dữ liệu card sau khi đã xóa attachment từ backend
       state.currentActiveCard = action.payload;
+      // Cập nhật card trong activeBoard state
+      // updateCardInBoard(action.payload); // Gọi action để cập nhật board - Đã xóa dòng này
     });
   }
 })
