@@ -133,14 +133,14 @@ function TemplatesList() {
                         >
                           Use Template
                         </Button>
-                        <IconButton 
+                        {/* <IconButton 
                           aria-label="delete template"
                           onClick={() => dispatch(deleteTemplate(template._id))}
                           size="small"
                           sx={{ ml: 'auto' }}
                         >
                           <DeleteIcon fontSize="small" />
-                        </IconButton>
+                        </IconButton> */}
                       </CardActions>
                     </Card>
                   </Grid>
