@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { fetchTemplates } from '~/redux/templates/templatesSlice';
+import { fetchTemplates, deleteTemplate } from '~/redux/templates/templatesSlice';
 import { 
   Box, 
   Typography, 
@@ -12,13 +12,15 @@ import {
   Button,
   Container,
   AppBar,
-  Toolbar
+  Toolbar,
+  IconButton
 } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import SpaceDashboardIcon from '@mui/icons-material/SpaceDashboard';
 import ListAltIcon from '@mui/icons-material/ListAlt';
 import HomeIcon from '@mui/icons-material/Home';
 import ArrowRightIcon from '@mui/icons-material/ArrowRight';
+import DeleteIcon from '@mui/icons-material/Delete';
 import { styled } from '@mui/material/styles';
 import AppBarComponent from '~/components/AppBar/AppBar';
 
@@ -131,6 +133,14 @@ function TemplatesList() {
                         >
                           Use Template
                         </Button>
+                        <IconButton 
+                          aria-label="delete template"
+                          onClick={() => dispatch(deleteTemplate(template._id))}
+                          size="small"
+                          sx={{ ml: 'auto' }}
+                        >
+                          <DeleteIcon fontSize="small" />
+                        </IconButton>
                       </CardActions>
                     </Card>
                   </Grid>
