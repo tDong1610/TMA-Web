@@ -15,8 +15,6 @@ import Menu from '@mui/material/Menu'
 import MenuItem from '@mui/material/MenuItem'
 import EditIcon from '@mui/icons-material/Edit'
 import DeleteForeverIcon from '@mui/icons-material/DeleteForever'
-import LockOpenIcon from '@mui/icons-material/LockOpen'
-import LockIcon from '@mui/icons-material/Lock'
 import Dialog from '@mui/material/Dialog'
 import DialogTitle from '@mui/material/DialogTitle'
 import DialogContent from '@mui/material/DialogContent'
@@ -49,7 +47,6 @@ const MENU_STYLES = {
 function BoardBar({ board }) {
   const navigate = useNavigate()
   const [anchorEl, setAnchorEl] = useState(null)
-  const [openTypeDialog, setOpenTypeDialog] = useState(false)
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false)
   const openMenu = Boolean(anchorEl)
   const [openEditDialog, setOpenEditDialog] = useState(false)
@@ -106,24 +103,6 @@ function BoardBar({ board }) {
     }
   }
 
-
-  const [newBoardType, setNewBoardType] = useState(board?.type)
-
-  const handleToggleBoardType = () => {
-    setNewBoardType(board?.type === 'private' ? 'public' : 'private')
-    setOpenTypeDialog(true)
-    handleCloseMenu()
-  }
-
-  const handleConfirmChangeType = () => {
-    // Gửi API đổi type ở đây
-    alert(`Changed to ${newBoardType}`)
-    setOpenTypeDialog(false)
-  }
-
-  const handleCancelChangeType = () => {
-    setOpenTypeDialog(false)
-  }
   return (
     <Box sx={{
       width: '100%',
@@ -226,17 +205,6 @@ function BoardBar({ board }) {
           <ListItemIcon><DeleteForeverIcon fontSize="small" /></ListItemIcon>
           <ListItemText>Xóa bảng</ListItemText>
         </MenuItem>
-        <MenuItem onClick={handleToggleBoardType}>
-          {board?.type === 'private' ? (
-            <>
-              <LockOpenIcon fontSize="small" sx={{ mr: 1 }} /> Switch to Public
-            </>
-          ) : (
-            <>
-              <LockIcon fontSize="small" sx={{ mr: 1 }} /> Switch to Private
-            </>
-          )}
-        </MenuItem>
       </Menu>
 
       <Dialog open={openDeleteDialog} onClose={handleCloseDeleteDialog}>
@@ -272,48 +240,6 @@ function BoardBar({ board }) {
           <Button onClick={handleCloseEditDialog}>Hủy</Button>
           <Button onClick={handleUpdateBoardTitle} color="primary" variant="contained">
             Lưu
-          </Button>
-        </DialogActions>
-      </Dialog>
-
-      <Dialog open={openTypeDialog} onClose={handleCancelChangeType}>
-        <DialogTitle>Change Board Visibility</DialogTitle>
-        <DialogContent>
-          <DialogContentText>
-            Are you sure you want to change this board to {newBoardType.toUpperCase()}?
-          </DialogContentText>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleCancelChangeType} color="inherit">
-            Cancel
-          </Button>
-          <Button onClick={handleConfirmChangeType} color="primary" variant="contained">
-            Confirm
-          </Button>
-        </DialogActions>
-      </Dialog>
-
-      <Dialog open={openDeleteDialog} onClose={() => setOpenDeleteDialog(false)}>
-        <DialogTitle>Delete Board</DialogTitle>
-        <DialogContent>
-          <DialogContentText>
-            Are you sure you want to delete this board? This action cannot be undone.
-          </DialogContentText>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setOpenDeleteDialog(false)} color="inherit">
-            Cancel
-          </Button>
-          <Button
-            onClick={() => {
-              // TODO: Gọi API hoặc function để xóa board tại đây
-              console.log('Deleting board...')
-              setOpenDeleteDialog(false)
-            }}
-            color="error"
-            variant="contained"
-          >
-            Delete
           </Button>
         </DialogActions>
       </Dialog>
