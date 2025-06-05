@@ -30,7 +30,8 @@ export default defineConfig({
         chunkFileNames: 'assets/[name]-[hash].js',
         assetFileNames: 'assets/[name]-[hash].[ext]'
       }
-    }
+    },
+    assetsInlineLimit: 0
   },
   resolve: {
     alias: {
