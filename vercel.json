@@ -33,6 +33,15 @@
             "value": "application/javascript"
           }
         ]
+      },
+      {
+        "source": "/(.*).css",
+        "headers": [
+          {
+            "key": "Content-Type",
+            "value": "text/css"
+          }
+        ]
       }
     ],
     "routes": [
